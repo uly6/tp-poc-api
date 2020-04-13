@@ -10,27 +10,46 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const getStatusList = (request, response) => {
-  const result = db.get("status").find({ id: postId }).value();
+// orders
+const getOrderList = (request, response) => {
+  const result = db.get("orders").value();
   response.status(200).json(result);
 };
 
-const getTasksList = (request, response) => {
-  const result = db.get("tasks").value();
+const getOrderById = (request, response) => {
+  const result = db.get("orders").find({ id: request.params.id }).value();
   response.status(200).json(result);
 };
 
-const getTasksById = (request, response) => {
-  const result = db.get("tasks").find({ id: request.params.id }).value();
+const addOrder = (request, response) => {
+  const { description, station } = request.body;
+  const data = {
+    id: shortid.generate(),
+    description,
+    station,
+  };
+  const result = db.get("orders").push(data).write();
+  response
+    .status(201)
+    .json({ status: "success", message: "Order added", result });
+};
+
+// tasks
+const getTasksByOrderId = (request, response) => {
+  const result = db
+    .get("tasks")
+    .find({ orderId: request.params.orderId })
+    .value();
   response.status(200).json(result);
 };
 
 const addTask = (request, response) => {
-  const { name, status } = request.body;
+  const { orderId, description } = request.body;
   const data = {
     id: shortid.generate(),
-    name,
-    status,
+    orderId,
+    description,
+    done: false,
   };
   const result = db.get("tasks").push(data).write();
   response
@@ -38,12 +57,13 @@ const addTask = (request, response) => {
     .json({ status: "success", message: "Task added", result });
 };
 
-// status api
-app.get("/api/status", getStatusList);
+// orders api
+app.get("/api/orders", getOrderList);
+app.get("/api/orders/:id", getOrderById);
+app.post("/api/orders", addOrder);
 
 // tasks api
-app.get("/api/tasks", getTasksList);
-app.get("/api/tasks/:id", getTasksById);
+app.get("/api/tasks/:orderId", getTasksByOrderId);
 app.post("/api/tasks", addTask);
 
 // Start server
