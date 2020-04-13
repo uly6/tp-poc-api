@@ -17,8 +17,19 @@ const getOrderList = (request, response) => {
 };
 
 const getOrderById = (request, response) => {
-  const result = db.get("orders").find({ id: request.params.id }).value();
-  response.status(200).json(result);
+  // order
+  const order = db.get("orders").find({ id: request.params.id }).value();
+
+  // tasks
+  const tasks = db.get("tasks").find({ orderId: request.params.id }).value();
+
+  // pictures
+  const pictures = db
+    .get("pictures")
+    .find({ orderId: request.params.id })
+    .value();
+
+  response.status(200).json({ ...order, tasks, pictures });
 };
 
 const addOrder = (request, response) => {
