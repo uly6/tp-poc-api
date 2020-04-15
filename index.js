@@ -24,11 +24,7 @@ const getOrderById = (request, response) => {
   const tasks =
     db.get("tasks").filter({ orderId: request.params.id }).value() || [];
 
-  // pictures
-  const pictures =
-    db.get("pictures").filter({ orderId: request.params.id }).value() || [];
-
-  response.status(200).json({ ...order, tasks, pictures });
+  response.status(200).json({ ...order, tasks });
 };
 
 const addOrder = (request, response) => {

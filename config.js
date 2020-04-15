@@ -83,6 +83,6 @@ const tasks = [
 ];
 
 // save to database
-db.defaults({ orders, tasks, pictures: [] }).write();
+db.defaults({ orders, tasks }).write();
 
 module.exports = { db };
