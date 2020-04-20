@@ -4,6 +4,10 @@ const cors = require("cors");
 const shortid = require("shortid");
 const { db } = require("./config");
 
+shortid.characters(
+  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@"
+);
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -12,19 +16,13 @@ app.use(cors());
 
 // orders
 const getOrderList = (request, response) => {
-  const result = db.get("orders").value();
-  response.status(200).json(result);
+  const orders = db.get("orders").value();
+  response.status(200).json(orders);
 };
 
 const getOrderById = (request, response) => {
-  // order
   const order = db.get("orders").find({ id: request.params.id }).value();
-
-  // tasks
-  const tasks =
-    db.get("tasks").filter({ orderId: request.params.id }).value() || [];
-
-  response.status(200).json({ ...order, tasks });
+  response.status(200).json(order);
 };
 
 const addOrder = (request, response) => {
@@ -38,6 +36,13 @@ const addOrder = (request, response) => {
   response
     .status(201)
     .json({ status: "success", message: "Order added", result });
+};
+
+const getTasksByOrderId = (request, response) => {
+  const tasks =
+    db.get("tasks").filter({ orderId: request.params.orderId }).value() || [];
+
+  response.status(200).json(tasks);
 };
 
 const addTask = (request, response) => {
@@ -60,6 +65,7 @@ app.get("/api/orders/:id", getOrderById);
 app.post("/api/orders", addOrder);
 
 // tasks api
+app.get("/api/tasks/:orderId", getTasksByOrderId);
 app.post("/api/tasks", addTask);
 
 // Start server

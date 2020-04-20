@@ -6,6 +6,10 @@ const FileSync = require("lowdb/adapters/FileSync");
 const adapter = new FileSync("db.json");
 const db = low(adapter);
 
+shortid.characters(
+  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$@"
+);
+
 // set some sample data
 const orders = [
   {
@@ -25,62 +29,30 @@ const orders = [
   },
 ];
 
-const tasks = [
-  {
-    id: shortid.generate(),
-    orderId: orders[0].id,
-    description: "Task 01",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[0].id,
-    description: "Task 02",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[0].id,
-    description: "Task 03",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[1].id,
-    description: "Task 01",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[1].id,
-    description: "Task 02",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[1].id,
-    description: "Task 03",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[2].id,
-    description: "Task 01",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[2].id,
-    description: "Task 02",
-    done: false,
-  },
-  {
-    id: shortid.generate(),
-    orderId: orders[2].id,
-    description: "Task 03",
-    done: false,
-  },
-];
+const tasks = orders
+  .map((order) => {
+    return [
+      {
+        id: shortid.generate(),
+        orderId: order.id,
+        description: "Check general conditions are good",
+        completed: false,
+      },
+      {
+        id: shortid.generate(),
+        orderId: order.id,
+        description: "Check if labels are in the correct place",
+        completed: false,
+      },
+      {
+        id: shortid.generate(),
+        orderId: order.id,
+        description: "Check if voltage is correct",
+        completed: false,
+      },
+    ];
+  })
+  .flat();
 
 // save to database
 db.defaults({ orders, tasks }).write();
